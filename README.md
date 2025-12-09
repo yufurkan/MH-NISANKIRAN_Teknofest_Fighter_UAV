@@ -1,7 +1,7 @@
 # MH-NISANKIRAN_Teknofest_Fighter_UAV
 
 <div align="center">
-  <img src="media/NİŞANKIRAN2.jpg" width="800">
+  <img src="media/NİŞANKIRAN2.jpg">
 </div>
 
 <br>
@@ -17,8 +17,10 @@
 </div>
 
 <div align="center">
-  <img src="media/NİŞANKIRAN4.jpg" width="45%"> 
-  <img src="media/Sstem Mimarisi.png" width="45%">
+  <img src="media/NİŞANKIRAN4.jpg" > 
+</div>
+  <div align="center">
+  <img src="media/Sstem Mimarisi.png" >
 </div>
 
 <div align="center">
