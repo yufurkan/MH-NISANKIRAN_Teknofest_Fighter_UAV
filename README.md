@@ -32,6 +32,6 @@
 <div align="center">
   <h3>Mavi Hilal SİHA - Youtube</h3>
   <a href="https://www.youtube.com/shorts/em-paRsKWr8">
-    <img src="https://img.youtube.com/vi/em-paRsKWr8/0.jpg" alt="Nişankıran Video" style="width:100%; max-width:600px;">
+    <img src="https://img.youtube.com/vi/em-paRsKWr8/0.jpg" alt="Nişankıran YouTube Shorts Video" style="width:100%; max-width:600px; border: 3px solid #FF0000; border-radius: 12px;">
   </a>
 </div>
