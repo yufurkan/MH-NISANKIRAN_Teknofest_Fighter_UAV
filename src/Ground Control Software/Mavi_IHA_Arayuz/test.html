@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Test</title>
+    <script src="qwebchannel.js"></script> 
+</head>
+<body>
+    <h1>Minimal WebChannel Testi</h1>
+    <p>Aşağıdaki butona tıkladığınızda terminalde bir mesaj görmelisiniz.</p>
+    <button onclick="sendMessageToPython()">Python'a Mesaj Gönder</button>
+
+    <script>
+        var pythonBridge;
+        // Sayfa yüklendiğinde WebChannel'ı hemen kurmaya çalış
+        window.onload = function() {
+            if (typeof qt !== "undefined") {
+                 new QWebChannel(qt.webChannelTransport, function (channel) {
+                    pythonBridge = channel.objects.bridge;
+                    console.log("JS: WebChannel bağlantısı kuruldu.");
+                    document.body.style.backgroundColor = "#d4edda"; // Başarılı olursa arkaplanı yeşil yap
+                });
+            } else {
+                console.error("JS Hatası: 'qt' nesnesi bulunamadı!");
+                document.body.style.backgroundColor = "#f8d7da"; // Başarısız olursa arkaplanı kırmızı yap
+            }
+        };
+
+        function sendMessageToPython() {
+            if (pythonBridge) {
+                pythonBridge.show_message("Merhaba Python!");
+            } else {
+                alert("Hata: Python köprüsü kurulamadı!");
+            }
+        }
+    </script>
+</body>
+</html>

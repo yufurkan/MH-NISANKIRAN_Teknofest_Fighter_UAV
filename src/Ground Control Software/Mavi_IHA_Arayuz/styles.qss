@@ -1,0 +1,82 @@
+/* styles.qss - İki Sütunlu & Sekmeli Tema */
+QWidget {
+    background-color: #ECF0F1; /* Ana Arka Plan */
+    color: #212F3D;            /* Ana Yazı Rengi */
+    font-family: Arial, sans-serif;
+}
+
+/* Üst Bar Stili */
+#TopBarWidget {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #D5D6D6;
+}
+#TopBarWidget QLabel, #TopBarWidget QPushButton {
+    color: #212F3D; /* Üst bardaki yazılar koyu */
+}
+#TopBarWidget QPushButton {
+    background-color: #E8E8E8;
+    border: 1px solid #D5D6D6;
+}
+#TopBarWidget QPushButton:hover {
+    background-color: #D5D6D6;
+}
+#TopBarWidget QLabel#TitleLabel {
+    font-size: 16px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+/* Grup Kutuları Stili */
+QGroupBox {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2C3E50;
+    background-color: #FFFFFF;
+    border: 1px solid #D5D6D6;
+    border-radius: 5px;
+    margin-top: 1ex;
+    padding: 10px;
+    padding-top: 20px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left; /* Başlığı sola al */
+    padding: 2px 10px;
+    left: 10px;
+    background-color: #5DADE2;
+    border-radius: 3px;
+    color: #FFFFFF;
+}
+
+/* Ana Buton Stili (Turuncu) */
+QPushButton {
+    background-color: #E67E22;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+}
+QPushButton:hover { background-color: #F39C12; }
+QPushButton:pressed { background-color: #D35400; }
+
+/* Sekme (Tab) Stilleri */
+QTabWidget::pane {
+    border: 1px solid #D5D6D6;
+    border-top: none;
+}
+QTabBar::tab {
+    background: #E8E8E8;
+    border: 1px solid #D5D6D6;
+    border-bottom: none; 
+    padding: 8px 20px;
+    font-weight: bold;
+}
+QTabBar::tab:selected {
+    background: #FFFFFF;
+    margin-bottom: -1px; /* Seçili sekmenin kenarlığını pane ile birleştirir */
+}
+QTabBar::tab:!selected:hover {
+    background: #D5D6D6;
+}
