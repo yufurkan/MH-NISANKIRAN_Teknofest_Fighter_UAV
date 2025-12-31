@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browser Network Test</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="leaflet.css" />
+    <script src="leaflet.js"></script>
+    
+    <style>
+        html, body, #map { height: 100%; width: 100%; margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // === BU TESTTEKİ ÖNEMLİ DEĞİŞİKLİK ===
+        // QWebChannel'ı çağıran bölümü yoruma alıyoruz, çünkü bu tarayıcıda çalışmaz.
+        
+        /*
+        window.onload = function() {
+            new QWebChannel(qt.webChannelTransport, function(channel) {
+                // Bu kısım tarayıcıda hata verir.
+            });
+            initMap(37.874, 32.494);
+        };
+        */
+       
+        // Haritayı doğrudan başlatalım.
+        initMap(37.874, 32.494);
+
+
+        function initMap(lat, lon) {
+            console.log("initMap fonksiyonu çalıştırıldı.");
+            var map = L.map('map').setView([lat, lon], 13);
+
+            // OpenStreetMap'i deneyelim.
+            var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+            openStreetMap.addTo(map);
+
+            // Harita karoları yüklenemezse konsola hata yazdır.
+            openStreetMap.on('tileerror', function(error, tile) {
+                console.error('Harita karosu yüklenemedi!', error);
+                document.body.innerHTML = '<h1>Harita Yüklenemedi. İnternet bağlantınızı veya Firewall ayarlarınızı kontrol edin.</h1>';
+            });
+            
+            console.log("Harita başarıyla başlatıldı.");
+            L.marker([lat, lon]).addTo(map).bindPopup("Konya").openPopup();
+        }
+    </script>
+</body>
+</html>

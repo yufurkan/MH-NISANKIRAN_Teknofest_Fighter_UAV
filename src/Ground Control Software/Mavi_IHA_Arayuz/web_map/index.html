@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GCS Online Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="leaflet.css" />
+    <script src="leaflet.js"></script>
+    <script src="qwebchannel.js"></script> <style>
+        html, body, #map { 
+            height: 100%; 
+            width: 100%; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #333333; 
+            cursor: crosshair;
+        }
+        .waypoint-icon {
+            background-color: rgba(255, 167, 38, 0.9);
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 1px #000;
+        }
+        .qgc-waypoint-icon {
+            background-color: rgba(52, 152, 219, 0.9);
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 1px #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        var map;
+        var pythonBridge;
+
+        var userWaypoints = [];
+        var receivedWaypoints = [];
+        
+        var userWaypointMarkers;
+        var userRouteLine;
+        var receivedWaypointMarkers;
+        var receivedRouteLine;
+        var hssZonesLayer;
+        var kamikazeTargetMarker;
+        var vehicleMarker;
+
+        // Bu fonksiyon, Python'daki setup_channel fonksiyonu bittikten sonra çağrılacak.
+        function initializeBackend() {
+            // 'qt' nesnesinin artık tanımlı olması gerekiyor.
+            if (typeof qt === "undefined") {
+                console.error("HATA: 'qt' nesnesi tanımsız. Python tarafı setWebChannel çağrısını tamamlayamadı.");
+                return;
+            }
+            
+            new QWebChannel(qt.webChannelTransport, function(channel) {
+                // Köprü başarıyla kuruldu, şimdi global değişkene atayabiliriz.
+                window.pythonBridge = channel.objects.bridge;
+                console.log("JavaScript Tarafı: Python köprüsü başarıyla bağlandı.");
+                
+                // Her şey hazır olduğuna göre, haritayı şimdi başlatabiliriz.
+                initMap(37.874, 32.494);
+            });
+        }
+
+        function initMap(lat, lon) {
+            if (map) return;
+            map = L.map('map').setView([lat, lon], 13);
+            
+            console.log("JavaScript Tarafı: Harita başlatılıyor...");
+            // İnternet bağlantısı gerektirir
+            L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3'],
+                attribution: 'Map data &copy; Google'
+            }).addTo(map);
+            console.log("JavaScript Tarafı: Harita katmanı eklendi.");
+            
+            // Tüm katmanları başlat ve haritaya ekle
+            userWaypointMarkers = L.layerGroup().addTo(map);
+            userRouteLine = L.polyline([], {color: '#FFA726', weight: 3, opacity: 0.8}).addTo(map);
+            receivedWaypointMarkers = L.layerGroup().addTo(map);
+            receivedRouteLine = L.polyline([], {color: '#3498DB', weight: 4, opacity: 0.9, dashArray: '5, 10'}).addTo(map);
+            hssZonesLayer = L.layerGroup().addTo(map);
+            
+            map.on('click', onMapClick);
+        }
+        
+        // --- Python'dan çağrılacak fonksiyonlar ---
+
+        function onMapClick(e) {
+            if (!map) return;
+            var lat = e.latlng.lat;
+            var lon = e.latlng.lng;
+            var waypointNum = userWaypoints.length + 1;
+
+            userWaypoints.push({lat: lat, lon: lon});
+
+            var icon = L.divIcon({ className: 'waypoint-icon', html: '<b>' + waypointNum + '</b>', iconSize: [24, 24], iconAnchor: [12, 12] });
+            L.marker([lat, lon], {icon: icon}).addTo(userWaypointMarkers);
+            userRouteLine.addLatLng([lat, lon]);
+        }
+        
+        function updateVehiclePosition(lat, lon) {
+            if (!map) return; 
+            if (!vehicleMarker) {
+                var vehicleIcon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/9417/9417400.png',
+                    iconSize: [38, 38],
+                    iconAnchor: [19, 19]
+                });
+                vehicleMarker = L.marker([lat, lon], {icon: vehicleIcon}).addTo(map);
+                map.setView([lat, lon], 15);
+            }
+            vehicleMarker.setLatLng([lat, lon]);
+        }
+        
+        function clearRoute() { 
+            if (!map) return;
+            userWaypoints = []; 
+            userWaypointMarkers.clearLayers(); 
+            userRouteLine.setLatLngs([]); 
+            console.log("Kullanıcı rotası temizlendi.");
+        }
+        
+        function sendRouteToPython() { 
+            if (pythonBridge) { 
+                pythonBridge.sendWaypointsToPython(JSON.stringify(userWaypoints)); 
+                console.log(userWaypoints.length + " waypoint Python'a gönderildi.");
+            } else {
+                console.error("Python köprüsü bulunamadı!");
+            }
+        }
+        
+        function drawRouteFromPython(waypoints_list) {
+            if (!map) return;
+            console.log("Python'dan rota verisi alındı.");
+            receivedWaypoints = waypoints_list;
+            receivedWaypointMarkers.clearLayers();
+            var latlngs = [];
+            
+            waypoints_list.forEach(function(wp, index) {
+                var latlng = [wp.lat, wp.lon];
+                latlngs.push(latlng);
+                var icon = L.divIcon({ className: 'qgc-waypoint-icon', html: '<b>' + (index + 1) + '</b>', iconSize: [24, 24], iconAnchor: [12, 12]});
+                L.marker(latlng, {icon: icon}).addTo(receivedWaypointMarkers);
+            });
+            receivedRouteLine.setLatLngs(latlngs);
+
+            if (latlngs.length > 0) {
+                map.fitBounds(receivedRouteLine.getBounds().pad(0.1));
+            }
+        }
+        
+        function drawHssZone(lat, lon, radius) { 
+            if (!map) return;
+            L.circle([lat, lon], { radius: radius, color: 'red', fillColor: '#f03', fillOpacity: 0.3 }).addTo(hssZonesLayer); 
+        }
+        
+        function clearHssZones() { 
+            if (!hssZonesLayer) return;
+            hssZonesLayer.clearLayers(); 
+        }
+        
+        function drawKamikazeTarget(lat, lon) {
+            if (!map) return;
+            if (kamikazeTargetMarker) { map.removeLayer(kamikazeTargetMarker); }
+            var targetIcon = L.icon({ 
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/25/25433.png',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+            kamikazeTargetMarker = L.marker([lat, lon], { icon: targetIcon }).bindPopup('Kamikaze Hedefi').addTo(map);
+            map.setView([lat,lon], 17);
+        }
+
+    </script>
+</body>
+</html>
