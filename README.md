@@ -19,13 +19,7 @@
 <div align="center">
   <img src="media/NİŞANKIRAN4.jpg" > 
 </div>
-  <div align="center">
-  <img src="media/Sstem Mimarisi.png" >
-</div>
 
-<div align="center">
-  <img src="media/Haberleşme Mimarisi.png" width="80%">
-</div>
 
 <br>
 
