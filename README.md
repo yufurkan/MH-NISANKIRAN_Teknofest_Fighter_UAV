@@ -8,7 +8,7 @@
 
 <div align="center">
   <img src="media/takım7.jpg" width="45%"> 
-  <img src="media/NİŞANKIRAN.jpg" width="45%">
+  <img src="media/NİŞANKIRAN4.jpg" width="45%">
 </div>
 
 <div align="center">
