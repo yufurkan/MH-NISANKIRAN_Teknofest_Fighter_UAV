@@ -17,7 +17,7 @@
 </div>
 
 <div align="center">
-  <img src="media/NİŞANKIRAN4.jpg" > 
+  <img src="media/Çalışma1.jpg" > 
 </div>
 
 
