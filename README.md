@@ -21,7 +21,7 @@
 </div>
 
 <div align="center">
-  <img src="media/Simülasyon 1.jpg" > 
+  <img src="media/Simülasyon 1.png" > 
 </div>
 
 <br>
