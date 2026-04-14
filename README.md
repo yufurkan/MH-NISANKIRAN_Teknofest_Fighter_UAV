@@ -20,6 +20,9 @@
   <img src="media/Çalışma1.jpg" > 
 </div>
 
+<div align="center">
+  <img src="media/Simülasyon 1.jpg" > 
+</div>
 
 <br>
 
