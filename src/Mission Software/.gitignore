@@ -1,0 +1,40 @@
+# ROS 2 Derleme ve Log Klasörleri (ASLA GITHUB'A ATILMAZ)
+build/
+install/
+log/
+
+# Python 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# C++ Derleme 
+*.o
+*.obj
+*.so
+*.dylib
+*.a
+*.lib
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# IDE 
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# İşletim Sistemi 
+.DS_Store
+Thumbs.db
+
+#px4 
+px4_msgs/
