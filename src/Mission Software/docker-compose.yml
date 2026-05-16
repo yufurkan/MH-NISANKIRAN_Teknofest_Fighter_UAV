@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  otonomi:
+    build: .
+    image: nisankiran:v1
+    container_name: nisankiran_otonomi
+    network_mode: "host"
+    privileged: true
